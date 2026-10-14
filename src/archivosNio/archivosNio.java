@@ -1,4 +1,4 @@
-package colegio.archivosNio;
+package archivosNio;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -16,13 +16,13 @@ import java.util.List;
 
 public class archivosNio {
 
-    private static final Path BASE = Paths.get("empresa");
+    private static final Path BASE = Paths.get("colegio");
     private static final DateTimeFormatter FORMATO =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     // ---------- 1. Crear estructura ----------
     public static void crearEstructura() {
-        String[] carpetas = {"auditoria", "empleados", "logs"};
+        String[] carpetas = {"alumnos", "cursos", "matriculas"};
         for (String nombre : carpetas) {
             Path dir = BASE.resolve(nombre);
             try {
@@ -108,6 +108,6 @@ public class archivosNio {
     public static void main(String[] args) {
         crearEstructura();
         System.out.println();
-        listarDirectorio(BASE.resolve("auditoria"));
+        listarDirectorio(BASE.resolve("alumnos"));
     }
 }
