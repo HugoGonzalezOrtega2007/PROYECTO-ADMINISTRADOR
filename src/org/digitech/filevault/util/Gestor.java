@@ -1,4 +1,4 @@
-package archivosNio;
+package org.digitech.filevault.util;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -15,14 +15,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class archivosNio {
+public class Gestor {
 
     private static final Path BASE = Paths.get("colegio");
     private static final DateTimeFormatter FORMATO =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     public static void crearEstructura() {
-        String[] carpetas = {"alumnos", "cursos", "matriculas"};
+        String[] carpetas = {"alumnos", "cursos", "matriculas", "logs", "backup"};
         for (int i = 0; i < carpetas.length; i++) {
             Path dir = BASE.resolve(carpetas[i]);
             try {
@@ -102,9 +102,38 @@ public class archivosNio {
         }
     }
 
+    public static void inspeccionar(Path ruta) {
+        if (!Files.exists(ruta)) {
+            System.err.println("Error: la ruta no existe -> " + ruta);
+            return;
+        }
+
+        try {
+            Path absoluta = ruta.toAbsolutePath();
+
+            long libreBytes = Files.getFileStore(ruta).getUsableSpace();
+            double libreGB = libreBytes / (1024.0 * 1024.0 * 1024.0);
+
+            boolean lectura = Files.isReadable(ruta);
+            boolean escritura = Files.isWritable(ruta);
+
+            LocalDateTime fecha = LocalDateTime.ofInstant(
+                    Files.getLastModifiedTime(ruta).toInstant(), ZoneId.systemDefault());
+
+            System.out.println("Ruta absoluta: " + absoluta);
+            System.out.printf("Espacio libre en disco: %.2f GB%n", libreGB);
+            System.out.println("Permiso de lectura: " + (lectura ? "Sí" : "No"));
+            System.out.println("Permiso de escritura: " + (escritura ? "Sí" : "No"));
+            System.out.println("Última modificación: " + fecha.format(FORMATO));
+
+        } catch (IOException e) {
+            System.err.println("No se pudo inspeccionar " + ruta + ": " + e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
         crearEstructura();
         System.out.println();
-        listarDirectorio(BASE.resolve("alumnos"));
+        inspeccionar(BASE);
     }
 }
