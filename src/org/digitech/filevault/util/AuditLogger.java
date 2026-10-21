@@ -17,19 +17,17 @@ public class AuditLogger {
 
     public enum Nivel { INFO, WARNING, ERROR }
 
-    private static final Path LOG_DIR = Paths.get("./data/logs");
+    private static final Path LOG_DIR = Paths.get("colegio", "logs");
     private static final Path LOG_FILE = LOG_DIR.resolve("audit.log");
     private static final DateTimeFormatter FORMATO =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    // Crea ./data/logs si no existe
     private static void asegurarDirectorio() throws IOException {
         if (!Files.exists(LOG_DIR)) {
             Files.createDirectories(LOG_DIR);
         }
     }
 
-    // Escribe una línea y data fecha con año mes y dia: [YYYY-MM-DD HH:mm:ss]
     public static void registrar(Nivel nivel, String descripcion) {
         try {
             asegurarDirectorio();
@@ -50,9 +48,12 @@ public class AuditLogger {
         }
     }
 
-    // Busca una palabra clave (sin distinguir mayúsculas) y devuelve las líneas que la contienen
     public static List<String> buscar(String palabraClave) {
         List<String> resultados = new ArrayList<>();
+
+        if (palabraClave == null || palabraClave.isEmpty()) {
+            return resultados;
+        }
 
         if (!Files.exists(LOG_FILE)) {
             System.err.println("El log todavía no existe: " + LOG_FILE);
@@ -75,11 +76,10 @@ public class AuditLogger {
         return resultados;
     }
 
-    // Prueba rápida
     public static void main(String[] args) {
         registrar(Nivel.INFO, "Aplicación iniciada");
-        registrar(Nivel.WARNING, "Archivo empleados.csv sin permisos de escritura");
-        registrar(Nivel.ERROR, "Fallo al serializar Empleado");
+        registrar(Nivel.WARNING, "Archivo de matriculas sin permisos de escritura");
+        registrar(Nivel.ERROR, "Fallo al serializar alumno");
 
         List<String> encontradas = buscar("error");
         for (int i = 0; i < encontradas.size(); i++) {
