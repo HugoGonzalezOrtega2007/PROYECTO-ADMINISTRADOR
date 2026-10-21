@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class archivosNio {
@@ -20,16 +21,15 @@ public class archivosNio {
     private static final DateTimeFormatter FORMATO =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    // ---------- 1. Crear estructura ----------
     public static void crearEstructura() {
         String[] carpetas = {"alumnos", "cursos", "matriculas"};
-        for (String nombre : carpetas) {
-            Path dir = BASE.resolve(nombre);
+        for (int i = 0; i < carpetas.length; i++) {
+            Path dir = BASE.resolve(carpetas[i]);
             try {
                 if (Files.exists(dir)) {
                     System.out.println("Ya existe: " + dir);
                 } else {
-                    Files.createDirectories(dir);   // crea también "empresa" si falta
+                    Files.createDirectories(dir);
                     System.out.println("Creada: " + dir);
                 }
             } catch (IOException e) {
@@ -38,9 +38,7 @@ public class archivosNio {
         }
     }
 
-    // ---------- 2. Listar directorio ----------
     public static void listarDirectorio(Path dir) {
-        // Validaciones previas
         if (!Files.exists(dir)) {
             System.err.println("Error: el directorio no existe -> " + dir);
             return;
@@ -52,10 +50,9 @@ public class archivosNio {
 
         List<Path> entradas = new ArrayList<>();
 
-        // try-with-resources: el DirectoryStream se cierra solo
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
-            for (Path p : stream) {
-                entradas.add(p);
+            for (Iterator<Path> it = stream.iterator(); it.hasNext(); ) {
+                entradas.add(it.next());
             }
         } catch (NoSuchFileException e) {
             System.err.println("Error: no existe -> " + e.getMessage());
@@ -70,7 +67,6 @@ public class archivosNio {
             return;
         }
 
-        // Orden alfabético
         entradas.sort(Comparator.comparing(
                 p -> p.getFileName().toString(), String.CASE_INSENSITIVE_ORDER));
 
@@ -78,12 +74,15 @@ public class archivosNio {
                 "NOMBRE", "TAMAÑO (KB)", "MODIFICADO", "PERMISOS");
         System.out.println("-".repeat(75));
 
-        for (Path p : entradas) {
+        for (int i = 0; i < entradas.size(); i++) {
+            Path p = entradas.get(i);
             try {
                 BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
 
                 String nombre = p.getFileName().toString();
-                if (attr.isDirectory()) nombre += "/";
+                if (attr.isDirectory()) {
+                    nombre += "/";
+                }
 
                 double kb = attr.size() / 1024.0;
 
@@ -98,13 +97,11 @@ public class archivosNio {
                         nombre, kb, fecha.format(FORMATO), permisos);
 
             } catch (IOException e) {
-                // Un archivo problemático no debe romper todo el listado
                 System.err.println("No se pudo leer " + p.getFileName() + ": " + e.getMessage());
             }
         }
     }
 
-    // ---------- Prueba ----------
     public static void main(String[] args) {
         crearEstructura();
         System.out.println();
