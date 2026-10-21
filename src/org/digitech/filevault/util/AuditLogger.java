@@ -29,7 +29,7 @@ public class AuditLogger {
         }
     }
 
-    // Escribe una línea: [YYYY-MM-DD HH:mm:ss] [NIVEL] Descripción
+    // Escribe una línea y data fecha con año mes y dia: [YYYY-MM-DD HH:mm:ss]
     public static void registrar(Nivel nivel, String descripcion) {
         try {
             asegurarDirectorio();
