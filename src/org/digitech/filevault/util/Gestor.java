@@ -41,7 +41,7 @@ public class Gestor {
     public static void listarDirectorio(Path dir) {
         if (!Files.exists(dir)) {
             System.err.println("Error: el directorio no existe -> " + dir);
-            return
+            return;
         }
         if (!Files.isDirectory(dir)) {
             System.err.println("Error: la ruta no es un directorio -> " + dir);
