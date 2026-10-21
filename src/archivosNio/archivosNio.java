@@ -70,7 +70,7 @@ public class archivosNio {
             return;
         }
 
-        // Ordenamos  alfabéticamente
+        // Orden alfabético
         entradas.sort(Comparator.comparing(
                 p -> p.getFileName().toString(), String.CASE_INSENSITIVE_ORDER));
 
