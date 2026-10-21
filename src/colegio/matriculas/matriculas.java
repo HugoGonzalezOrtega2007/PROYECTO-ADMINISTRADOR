@@ -1,4 +1,4 @@
-package matriculas;
+package colegio.matriculas;
 
 public class matriculas {
 }

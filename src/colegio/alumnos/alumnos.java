@@ -1,4 +1,4 @@
-package alumnos;
+package colegio.alumnos;
 
 public class alumnos {
 }
