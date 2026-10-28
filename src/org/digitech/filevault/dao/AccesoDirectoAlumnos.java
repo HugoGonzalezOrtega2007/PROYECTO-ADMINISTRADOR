@@ -12,15 +12,13 @@ import java.util.List;
 
 public class AccesoDirectoAlumnos {
 
-    private static final Path DIR = Paths.get("./data/escuela");
+    private static final Path DIR = Paths.get("colegio", "alumnos");
     private static final Path FICHERO = DIR.resolve("alumnos_directo.dat");
 
     private static final int NOMBRE_CHARS = 24;
     private static final int EMAIL_CHARS = 22;
 
-
     private static final int TAM_REGISTRO = 4 + NOMBRE_CHARS * 2 + EMAIL_CHARS * 2 + 4; // 100
-
 
     private static final int OFFSET_FALTAS = 4 + NOMBRE_CHARS * 2 + EMAIL_CHARS * 2;    // 96
 
@@ -59,7 +57,6 @@ public class AccesoDirectoAlumnos {
 
         return alumnos;
     }
-
 
     public static Alumno leerPorId(int id) {
         if (!Files.exists(FICHERO)) {
@@ -119,7 +116,8 @@ public class AccesoDirectoAlumnos {
         String nombre = leerTexto(raf, NOMBRE_CHARS);
         String email = leerTexto(raf, EMAIL_CHARS);
         int faltas = raf.readInt();
-        return new Alumno(id, nombre, email, faltas);
+        double nota = 0.0;
+        return new Alumno(id, nombre, email, faltas, nota);
     }
 
     private static void escribirTexto(RandomAccessFile raf, String texto, int longitud) throws IOException {
@@ -140,9 +138,9 @@ public class AccesoDirectoAlumnos {
 
     public static void main(String[] args) {
         guardarTodos(List.of(
-                new Alumno(1, "Marta Puig", "marta@instituto.cat", 2),
-                new Alumno(2, "Pau Serra", "pau@instituto.cat", 0),
-                new Alumno(3, "Laia Ferrer", "laia@instituto.cat", 4)));
+                new Alumno(1, "Marta Puig", "marta@instituto.cat", 2, 7.0),
+                new Alumno(2, "Pau Serra", "pau@instituto.cat", 0, 8.3)
+        ));
 
         System.out.println("\n--- Antes ---");
         leerTodos().forEach(System.out::println);

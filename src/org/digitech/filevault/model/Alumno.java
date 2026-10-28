@@ -2,12 +2,6 @@ package org.digitech.filevault.model;
 
 import java.io.Serializable;
 
-/**
- * Alumno del instituto.
- * <p>
- * Implementa {@link Serializable} para poder guardarse con
- * {@code ObjectOutputStream}.
- */
 public class Alumno implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -16,20 +10,15 @@ public class Alumno implements Serializable {
     private String nombre;
     private String email;
     private int faltas;
+    private double nota;
 
-    /**
-     * Crea un alumno.
-     *
-     * @param id     identificador del alumno
-     * @param nombre nombre completo
-     * @param email  correo electrónico
-     * @param faltas número de faltas de asistencia
-     */
-    public Alumno(int id, String nombre, String email, int faltas) {
+
+    public Alumno(int id, String nombre, String email, int faltas, double nota) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.faltas = faltas;
+        this.nota = nota;
     }
 
     public int getId() { return id; }
@@ -44,9 +33,12 @@ public class Alumno implements Serializable {
     public int getFaltas() { return faltas; }
     public void setFaltas(int faltas) { this.faltas = faltas; }
 
+    public double getNota() { return nota; }
+    public void setNota(double nota) { this.nota = nota; }
+
     @Override
     public String toString() {
-        return "Alumno{id=" + id + ", nombre='" + nombre + "', email='" + email
-                + "', faltas=" + faltas + "}";
+        return "Alumno Id: " + id + " -- Nombre: " + nombre + " -- Email: " + email
+                + " -- Faltas: " + faltas + " -- Nota: " + nota;
     }
 }
