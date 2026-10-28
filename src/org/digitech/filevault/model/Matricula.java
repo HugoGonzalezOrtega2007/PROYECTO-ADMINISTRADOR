@@ -25,6 +25,6 @@ public class Matricula implements Serializable {
 
     @Override
     public String toString() {
-        return "Matricula{alumnoId=" + alumnoId + ", cursoId=" + cursoId + ", fecha=" + fecha + "}";
+        return "Matricula -- Id Alumno: " + alumnoId + " -- Curso: " + cursoId + " -- Fecha: " + fecha;
     }
 }

@@ -24,6 +24,6 @@ public class Curso implements Serializable {
 
     @Override
     public String toString() {
-        return "Curso{id=" + id + ", nombre='" + nombre + "', horas=" + horas + "}";
+        return "Curso " + id + " -- Nombre: " + nombre + " -- Horas: " + horas;
     }
 }
