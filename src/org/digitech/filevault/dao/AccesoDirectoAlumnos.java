@@ -18,9 +18,10 @@ public class AccesoDirectoAlumnos {
     private static final int NOMBRE_CHARS = 24;
     private static final int EMAIL_CHARS = 22;
 
-    private static final int TAM_REGISTRO = 4 + NOMBRE_CHARS * 2 + EMAIL_CHARS * 2 + 4; // 100
+    private static final int TAM_REGISTRO = 4 + NOMBRE_CHARS * 2 + EMAIL_CHARS * 2 + 4 + 8; // 116 bytes
 
     private static final int OFFSET_FALTAS = 4 + NOMBRE_CHARS * 2 + EMAIL_CHARS * 2;    // 96
+    private static final int OFFSET_NOTA = OFFSET_FALTAS + 4;                           // 100
 
     public static void guardarTodos(List<Alumno> alumnos) {
         try {
@@ -104,11 +105,36 @@ public class AccesoDirectoAlumnos {
         return false;
     }
 
+    public static boolean modificarNotas(int id, double nuevaNota) {
+        if (!Files.exists(FICHERO)) {
+            System.err.println("El fichero de acceso directo todavía no existe: " + FICHERO);
+            return false;
+        }
+
+        try (RandomAccessFile raf = new RandomAccessFile(FICHERO.toFile(), "rw")) {
+            long total = raf.length() / TAM_REGISTRO;
+            for (long i = 0; i < total; i++) {
+                long pos = i * TAM_REGISTRO;
+                raf.seek(pos);
+                if (raf.readInt() == id) {
+                    raf.seek(pos + OFFSET_NOTA);
+                    raf.writeDouble(nuevaNota);
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al modificar la nota: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     private static void escribirRegistro(RandomAccessFile raf, Alumno alumno) throws IOException {
         raf.writeInt(alumno.getId());
         escribirTexto(raf, alumno.getNombre(), NOMBRE_CHARS);
         escribirTexto(raf, alumno.getEmail(), EMAIL_CHARS);
         raf.writeInt(alumno.getFaltas());
+        raf.writeDouble(alumno.getNota());
     }
 
     private static Alumno leerRegistro(RandomAccessFile raf) throws IOException {
@@ -116,7 +142,7 @@ public class AccesoDirectoAlumnos {
         String nombre = leerTexto(raf, NOMBRE_CHARS);
         String email = leerTexto(raf, EMAIL_CHARS);
         int faltas = raf.readInt();
-        double nota = 0.0;
+        double nota = raf.readDouble();
         return new Alumno(id, nombre, email, faltas, nota);
     }
 
@@ -127,28 +153,11 @@ public class AccesoDirectoAlumnos {
         }
     }
 
-
     private static String leerTexto(RandomAccessFile raf, int longitud) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < longitud; i++) {
             sb.append(raf.readChar());
         }
         return sb.toString().trim();
-    }
-
-    public static void main(String[] args) {
-        guardarTodos(List.of(
-                new Alumno(1, "Marta Puig", "marta@instituto.cat", 2, 7.0),
-                new Alumno(2, "Pau Serra", "pau@instituto.cat", 0, 8.3)
-        ));
-
-        System.out.println("\n--- Antes ---");
-        leerTodos().forEach(System.out::println);
-
-        boolean ok = modificarFaltas(2, 7);
-        System.out.println("\nModificación realizada: " + ok);
-
-        System.out.println("\n--- Después (alumno 2) ---");
-        System.out.println(leerPorId(2));
     }
 }
